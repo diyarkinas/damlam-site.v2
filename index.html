@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Damlam 🤍</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe Script', cursive;
+}
+
+body {
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #2b0f1e, #050005 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    touch-action: manipulation;
+}
+
+/* DÖNEN I LOVE YOU ÇEMBERİ */
+.circle-text-container {
+    position: absolute;
+    width: 340px;
+    height: 340px;
+    border-radius: 50%;
+    z-index: 1;
+    animation: rotateCircle 20s linear infinite;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+}
+
+.circle-char {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    font-size: 1.1rem;
+    color: rgba(255, 105, 180, 0.25);
+    transform-origin: 0 170px;
+    text-shadow: 0 0 5px rgba(255, 105, 180, 0.3);
+}
+
+@keyframes rotateCircle {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.container {
+    text-align: center;
+    z-index: 10;
+    padding: 20px;
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 {
+    font-size: 1.8em;
+    min-height: 120px;
+    text-shadow: 0 0 15px rgba(255,255,255,0.3);
+    line-height: 1.5;
+}
+
+.buttons {
+    margin-top: 20px;
+    display: none;
+    position: relative;
+    height: 80px;
+}
+
+button {
+    font-size: 1.1em;
+    padding: 12px 28px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+}
+
+#yes { background: white; color: black; position: relative; z-index: 5; }
+#no { background: #b0003a; color: white; position: absolute; left: 50%; margin-left: 10px; }
+
+/* ARKA PLANDA UÇAN KÜÇÜK ŞEFFAF KALPLER */
+.heart {
+    position: absolute;
+    color: rgba(255, 192, 203, 0.2);
+    pointer-events: none;
+    animation: floatUp 6s linear forwards;
+    z-index: 0;
+}
+
+@keyframes floatUp {
+    from { transform: translateY(100vh) rotate(0deg); opacity: 0.6; }
+    to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+}
+
+/* EVET SONRASI ÇIKAN ZARİF KÜÇÜK KALPLER */
+.burst-small {
+    position: absolute;
+    color: rgba(255, 182, 193, 0.4); 
+    font-size: 12px;
+    pointer-events: none;
+    animation: burst 2.5s ease-out forwards;
+}
+
+@keyframes burst {
+    0% { transform: translate(0, 0) scale(1); opacity: 1; }
+    100% { transform: translate(var(--tx), var(--ty)) scale(0.3); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<audio id="music" src="music.mp3" loop></audio>
+
+<div class="circle-text-container" id="circle-text"></div>
+
+<div class="container">
+    <h1 id="text"></h1>
+    <div class="buttons" id="buttons">
+        <button id="yes">Evet 🤍</button>
+        <button id="no">Hayır</button>
+    </div>
+</div>
+
+<script>
+const textEl = document.getElementById("text");
+const buttons = document.getElementById("buttons");
+const yesBtn = document.getElementById("yes");
+const noBtn = document.getElementById("no");
+const music = document.getElementById("music");
+const circleContainer = document.getElementById("circle-text");
+
+// Dönen yazı çemberi
+const circleString = "I LOVE YOU ❤️ I LOVE YOU ❤️ I LOVE YOU ❤️ ";
+const characters = circleString.split("");
+const angleStep = 360 / characters.length;
+
+characters.forEach((char, index) => {
+    const span = document.createElement("span");
+    span.innerText = char;
+    span.className = "circle-char";
+    span.style.transform = `rotate(${index * angleStep}deg)`;
+    circleContainer.appendChild(span);
+});
+
+// Yazı yazma (Daktilo) fonksiyonu
+function typeText(text, delay, cb) {
+    textEl.innerHTML = "";
+    let i = 0;
+    const interval = setInterval(() => {
+        textEl.innerHTML += text.charAt(i);
+        i++;
+        if (i >= text.length) {
+            clearInterval(interval);
+            if (cb) cb();
+        }
+    }, delay);
+}
+
+// Giriş yazıları
+typeText("Damlam...", 100, () => {
+    setTimeout(() => {
+        typeText("Benimle çıkar mısın? 🤍", 100, () => {
+            buttons.style.display = "block";
+            noBtn.style.left = (yesBtn.offsetLeft + yesBtn.offsetWidth + 10) + "px";
+            noBtn.style.top = yesBtn.offsetTop + "px";
+        });
+    }, 900);
+});
+
+// Hayır butonu kaçışı
+noBtn.addEventListener("mouseover", moveButton);
+function moveButton() {
+    const maxX = window.innerWidth - noBtn.offsetWidth - 20;
+    const maxY = window.innerHeight - noBtn.offsetHeight - 20;
+    noBtn.style.position = "fixed";
+    noBtn.style.left = Math.random() * maxX + "px";
+    noBtn.style.top = Math.random() * maxY + "px";
+}
+
+// Evet tıklandığında
+yesBtn.addEventListener("click", () => {
+    buttons.style.display = "none";
+    circleContainer.style.animationDuration = "10s"; 
+    
+    // ŞARKININ 2:07'DEN BAŞLAMASI
+    music.currentTime = 127;
+    music.play().catch(e => console.log("Müzik hatası:", e));
+
+    // Mesajın sıfırdan daktilo ile yazılması
+    const finalMsg = "Boyun küçük olabilir ama bende bıraktığın etki çok büyük ;) 🤍";
+    typeText(finalMsg, 80, () => {
+        setInterval(createSmallHeart, 400);
+    });
+
+    for(let i=0; i<30; i++) createSmallHeart();
+});
+
+function createSmallHeart() {
+    const h = document.createElement("div");
+    h.className = "burst-small";
+    h.innerHTML = "💖";
+    h.style.left = "50%";
+    h.style.top = "50%";
+    const tx = (Math.random() - 0.5) * 500 + "px";
+    const ty = (Math.random() - 0.5) * 500 + "px";
+    h.style.setProperty('--tx', tx);
+    h.style.setProperty('--ty', ty);
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 2500);
+}
+
+// Genel arka plan kalpleri
+setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.innerHTML = "🤍";
+    h.style.left = Math.random() * window.innerWidth + "px";
+    h.style.fontSize = 8 + Math.random() * 10 + "px";
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), 6000);
+}, 600);
+</script>
+
+</body>
+</html>
